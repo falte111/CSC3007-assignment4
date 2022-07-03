@@ -6,8 +6,8 @@
       div.tooltip {
         position: absolute;
         text-align: center;
-        width: 100px;
-        height: 50px;
+        width: 200px;
+        height: 70px;
         padding: 2px;
         font: 12px sans-serif;
         background: lightsteelblue;
@@ -18,8 +18,8 @@
     </style>
   </head>
   <body>
-    <button id="group1">Multiple Groups</button>
-    <button id="group2">One Center</button>
+    <button id="group1">Age</button>
+    <button id="group2">Vaccination Status</button>
     <svg></svg>
     <script src="https://d3js.org/d3.v7.min.js"></script>
 
@@ -41,6 +41,11 @@
 
         console.log(data[0]); //links
         console.log(data[1]); //cases
+
+        let xPosition = d3
+          .scaleOrdinal()
+          .domain([0, 1, 2])
+          .range([150, 400, 650]);
 
         var div = d3
           .select("body")
@@ -66,7 +71,13 @@
           .enter()
           .append("circle")
           .attr("r", 25)
-          .style("fill", "steelblue")
+          .style("fill", function (d) {
+            if (d.gender == "male") {
+              return "steelblue";
+            } else if (d.gender == "female") {
+              return "pink";
+            }
+          })
           .on("mouseover", (event, d) => {
             let path = d3.select(event.currentTarget);
             path.style("stroke", "red").style("stroke-width", 2);
@@ -80,8 +91,14 @@
                   "Gender: " +
                   d.gender +
                   "</br>" +
-                  "Nationality:" +
-                  d.nationality
+                  "Nationality: " +
+                  d.nationality +
+                  "</br>" +
+                  "Occuapation: " +
+                  d.occupation +
+                  "</br>" +
+                  "Date: " +
+                  d.date
               )
               .style("left", event.pageX + "px")
               .style("top", event.pageY - 28 + "px");
@@ -129,8 +146,7 @@
           .force("charge", d3.forceManyBody().strength(20))
           .force("collide", d3.forceCollide().strength(1).radius(30))
           .on("tick", (d) => {
-            node.attr("cx", (d) => d.x).attr("cy", (d) => d.y);
-
+            //Adding the curly lines between the nodes
             linkpath.attr(
               "d",
               (d) =>
@@ -138,11 +154,22 @@
                 d.source.x +
                 "," +
                 d.source.y +
-                " " +
+                "A" +
+                Math.sqrt(
+                  (d.target.x - d.source.x) * (d.target.x - d.source.x) +
+                    (d.target.y - d.source.y) * (d.target.y - d.source.y)
+                ) +
+                "," +
+                Math.sqrt(
+                  (d.target.x - d.source.x) * (d.target.x - d.source.x) +
+                    (d.target.y - d.source.y) * (d.target.y - d.source.y)
+                ) +
+                " 0 0,1 " +
                 d.target.x +
                 "," +
                 d.target.y
             );
+            node.attr("cx", (d) => d.x).attr("cy", (d) => d.y);
           });
 
         d3.select("#group1").on("click", function () {
