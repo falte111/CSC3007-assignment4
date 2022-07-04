@@ -216,7 +216,9 @@
             var g = svg
               .append("g")
               .attr("class", "legendThreshold")
-              .attr("transform", "translate(20,20)");
+              .attr("transform", "translate(20,20)")
+              //Add id "legend" for the element so that you can remove the initial legend and replace with new legend see line 277
+              .attr("id", "legend");
             g.append("text")
               .attr("class", "caption")
               .attr("x", 0)
@@ -234,8 +236,10 @@
 
             //Section for vaccinated category
           } else if (categoryType == "vaccinationStatus") {
-            var genderColorScheme = ["green", "yellow", "red"];
-            var colorScale = d3.scaleThreshold().range(genderColorScheme);
+            var vaccinationColorScheme = ["green", "yellow", "red"];
+            var vaccinationColorScale = d3
+              .scaleThreshold()
+              .range(vaccinationColorScheme);
             let width = 1000,
               height = 600;
             let svg = d3
@@ -245,7 +249,9 @@
             var g = svg
               .append("g")
               .attr("class", "legendThreshold")
-              .attr("transform", "translate(20,20)");
+              .attr("transform", "translate(20,20)")
+              //Add id "legend" for the element so that you can remove the initial legend and replace with new legend see line 277
+              .attr("id", "legend");
             g.append("text")
               .attr("class", "caption")
               .attr("x", 0)
@@ -262,12 +268,14 @@
                 return labels[d.i];
               })
               .shapePadding(4)
-              .scale(colorScale);
+              .scale(vaccinationColorScale);
             svg.select(".legendThreshold").call(legend);
           }
         }
         //Gender
         d3.select("#group1").on("click", function () {
+          var context = d3.selectAll("#legend"); //Need this line together with context.remove(), you need to remove the initial legend and replace with new legend
+          context.remove();
           generateLegend("gender");
           d3.selectAll("circle")
             .transition()
@@ -300,6 +308,8 @@
 
         //Vaccination Status
         d3.select("#group2").on("click", function () {
+          var context = d3.selectAll("#legend");
+          context.remove();
           generateLegend("vaccinationStatus");
           d3.selectAll("circle")
             .transition()
