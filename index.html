@@ -3,6 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <style>
+      .legendThreshold {
+        font-size: 12px;
+        font-family: sans-serif;
+      }
       div.tooltip {
         position: absolute;
         text-align: center;
@@ -22,7 +26,7 @@
     <button id="group2">Vaccination Status</button>
     <svg></svg>
     <script src="https://d3js.org/d3.v7.min.js"></script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/2.24.0/d3-legend.js"></script>
     <script>
       let width = 800,
         height = 800;
@@ -196,8 +200,75 @@
             node.attr("cx", (d) => d.x).attr("cy", (d) => d.y);
           });
 
+        generateLegend("gender");
+        function generateLegend(categoryType) {
+          //Section for gender catgeory
+          if (categoryType == "gender") {
+            var genderColorScheme = ["steelblue", "pink"];
+            var colorScale = d3.scaleThreshold().range(genderColorScheme);
+            let width = 1000,
+              height = 600;
+
+            let svg = d3
+              .select("svg")
+              .attr("viewBox", "0 0 " + width + " " + height);
+            // Legend for gender
+            var g = svg
+              .append("g")
+              .attr("class", "legendThreshold")
+              .attr("transform", "translate(20,20)");
+            g.append("text")
+              .attr("class", "caption")
+              .attr("x", 0)
+              .attr("y", -6)
+              .text("Legend");
+            var labels = ["Male", "Female"];
+            var legend = d3
+              .legendColor()
+              .labels(function (d) {
+                return labels[d.i];
+              })
+              .shapePadding(4)
+              .scale(colorScale);
+            svg.select(".legendThreshold").call(legend);
+
+            //Section for vaccinatd category
+          } else if (categoryType == "vaccinationStatus") {
+            var genderColorScheme = ["green", "yellow", "red"];
+            var colorScale = d3.scaleThreshold().range(genderColorScheme);
+            let width = 1000,
+              height = 600;
+            let svg = d3
+              .select("svg")
+              .attr("viewBox", "0 0 " + width + " " + height);
+            // Legend for vaccination status
+            var g = svg
+              .append("g")
+              .attr("class", "legendThreshold")
+              .attr("transform", "translate(20,20)");
+            g.append("text")
+              .attr("class", "caption")
+              .attr("x", 0)
+              .attr("y", -6)
+              .text("Legend");
+            var labels = [
+              "Vaccinated",
+              "Partially Vaccinated",
+              "Not Vaccinated",
+            ];
+            var legend = d3
+              .legendColor()
+              .labels(function (d) {
+                return labels[d.i];
+              })
+              .shapePadding(4)
+              .scale(colorScale);
+            svg.select(".legendThreshold").call(legend);
+          }
+        }
         //Gender
         d3.select("#group1").on("click", function () {
+          generateLegend("gender");
           d3.selectAll("circle")
             .transition()
             .duration(1000)
@@ -229,6 +300,7 @@
 
         //Vaccination Status
         d3.select("#group2").on("click", function () {
+          generateLegend("vaccinationStatus");
           d3.selectAll("circle")
             .transition()
             .duration(1000)
