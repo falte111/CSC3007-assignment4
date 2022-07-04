@@ -7,7 +7,7 @@
         position: absolute;
         text-align: center;
         width: 200px;
-        height: 70px;
+        height: 90px;
         padding: 2px;
         font: 12px sans-serif;
         background: lightsteelblue;
@@ -53,6 +53,23 @@
           .attr("class", "tooltip")
           .style("opacity", 0);
 
+        // Per-type markers, as they don't inherit styles.
+        svg
+          .append("defs")
+          .selectAll("marker")
+          .data(data[1])
+          .join("marker")
+          .attr("id", (d) => `arrow-${d}`)
+          .attr("viewBox", "0 -5 10 10")
+          .attr("refX", 38)
+          .attr("refY", 0)
+          .attr("markerWidth", 6)
+          .attr("markerHeight", 6)
+          .attr("orient", "auto")
+          .append("path")
+          .attr("fill", "black")
+          .attr("d", "M0,-5L10,0L0,5");
+
         let linkpath = svg
           .append("g")
           .attr("id", "links")
@@ -60,6 +77,10 @@
           .data(data[0])
           .enter()
           .append("path")
+          .attr(
+            "marker-end",
+            (d) => `url(${new URL(`#arrow-${d.type}`, location)})`
+          )
           .attr("fill", "none")
           .attr("stroke", "black");
 
@@ -96,6 +117,9 @@
                   "</br>" +
                   "Occuapation: " +
                   d.occupation +
+                  "</br>" +
+                  "Vaccinated: " +
+                  d.vaccinated +
                   "</br>" +
                   "Date: " +
                   d.date
@@ -172,27 +196,51 @@
             node.attr("cx", (d) => d.x).attr("cy", (d) => d.y);
           });
 
+        //Gender
         d3.select("#group1").on("click", function () {
-          simulation
-            .force(
-              "x",
-              d3
-                .forceX()
-                .strength(0.5)
-                .x((d) => xPosition(d.class))
-            )
-            .force(
-              "y",
-              d3
-                .forceY()
-                .strength(0.2)
-                .y(height / 2)
-            )
-            .alphaTarget(0.3)
-            .restart();
+          d3.selectAll("circle")
+            .transition()
+            .duration(1000)
+            .style("fill", function (d) {
+              if (d.gender == "male") {
+                return "steelblue";
+              } else if (d.gender == "female") {
+                return "pink";
+              }
+            });
+          //   simulation
+          //     .force(
+          //       "x",
+          //       d3
+          //         .forceX()
+          //         .strength(0.5)
+          //         .x((d) => xPosition(d.class))
+          //     )
+          //     .force(
+          //       "y",
+          //       d3
+          //         .forceY()
+          //         .strength(0.2)
+          //         .y(height / 2)
+          //     )
+          //     .alphaTarget(0.3)
+          //     .restart();
         });
 
+        //Vaccination Status
         d3.select("#group2").on("click", function () {
+          d3.selectAll("circle")
+            .transition()
+            .duration(1000)
+            .style("fill", function (d) {
+              if (d.vaccinated == "no") {
+                return "red";
+              } else if (d.vaccinated.includes("yes")) {
+                return "green";
+              } else if (d.vaccinated.includes("partial")) {
+                return "yellow";
+              }
+            });
           simulation
             .force("x", d3.forceX().strength(0.1).x(400))
             .force("y", d3.forceY().strength(0.1).y(400))
