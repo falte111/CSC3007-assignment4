@@ -22,7 +22,7 @@
     </style>
   </head>
   <body>
-    <button id="group1">Age</button>
+    <button id="group1">Gender</button>
     <button id="group2">Vaccination Status</button>
     <svg></svg>
     <script src="https://d3js.org/d3.v7.min.js"></script>
@@ -232,7 +232,7 @@
               .scale(colorScale);
             svg.select(".legendThreshold").call(legend);
 
-            //Section for vaccinatd category
+            //Section for vaccinated category
           } else if (categoryType == "vaccinationStatus") {
             var genderColorScheme = ["green", "yellow", "red"];
             var colorScale = d3.scaleThreshold().range(genderColorScheme);
